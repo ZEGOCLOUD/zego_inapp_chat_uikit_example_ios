@@ -60,13 +60,12 @@ class ViewController: UIViewController {
             if error.code != .success {
                 return
             }
-                        
-            // Call init
-            let config = ZegoUIKitPrebuiltCallInvitationConfig(notifyWhenAppRunningInBackgroundOrQuit: false, isSandboxEnvironment: true)
-            ZegoUIKitPrebuiltCallInvitationService.shared.initWithAppID(appID, appSign: appSign, userID: self.selfUserID, userName: self.selfUserName, config: config)
-            
             self.showConversationList()
         }
+        
+        // Call init
+        let config = ZegoUIKitPrebuiltCallInvitationConfig(notifyWhenAppRunningInBackgroundOrQuit: false, isSandboxEnvironment: true)
+        ZegoUIKitPrebuiltCallInvitationService.shared.initWithAppID(appID, appSign: appSign, userID: self.selfUserID, userName: self.selfUserName, config: config)
     }
     
     func showConversationList() {

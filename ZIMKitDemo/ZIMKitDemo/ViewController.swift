@@ -71,6 +71,7 @@ class ViewController: UIViewController {
     func showConversationList() {
         let vc = ZIMKitConversationListVC()
         vc.messageDelegate = self
+        vc.delegate = self
         
         navigationController?.pushViewController(vc, animated: true)
         
@@ -86,7 +87,8 @@ class ViewController: UIViewController {
 // MARK: - Start a chat
 extension ViewController {
     func startChat(_ conversationID: String, _ type: ZIMConversationType) {
-        let vc = ZIMKitMessagesListVC(conversationID: conversationID, type: type)
+        let inputConfig = InputConfig(showVoiceButton: true, showEmojiButton: true, showAddButton: true);
+        let vc = ZIMKitMessagesListVC(conversationID: conversationID, type: type, inputConfig: inputConfig)
         vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -196,7 +198,21 @@ extension ViewController {
 }
 
 // MARK: - Call
-extension ViewController: ZIMKitMessagesListVCDelegate {
+extension ViewController: ZIMKitMessagesListVCDelegate, ZIMKitConversationListVCDelegate {
+    func conversationList(_ conversationListVC: ZIMKitConversationListVC, didSelectWith conversation: ZIMKitConversation, defaultAction: () -> ()) {
+        
+        let inputConfig = InputConfig(showVoiceButton: true,
+                                      showEmojiButton: true,
+                                      showAddButton: true)
+        
+        let messageListVC = ZIMKitMessagesListVC(conversationID: conversation.id,
+                                                 type: conversation.type,
+                                                 conversationName: conversation.name,
+                                                 inputConfig: inputConfig)
+        messageListVC.delegate = self
+        self.navigationController?.pushViewController(messageListVC, animated: true)
+    }
+    
     func getMessageListHeaderBar(_ messageListVC: ZIMKitMessagesListVC) -> ZIMKitHeaderBar? {
         
         if messageListVC.conversationType != .peer { return nil }

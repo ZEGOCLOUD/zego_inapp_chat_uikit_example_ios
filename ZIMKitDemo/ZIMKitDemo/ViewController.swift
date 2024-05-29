@@ -9,7 +9,7 @@ import UIKit
 import ZIMKit
 import ZIM
 import ZegoUIKitPrebuiltCall
-import ZegoUIKitSDK
+import ZegoUIKit
 
 let appID: UInt32 = YOUR_APPID
 let appSign: String = YOUR_APP_SIGN

@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         
         let avatarUrl = "https://storage.zego.im/IMKit/avatar/avatar-0.png"
         ZIMKit.connectUser(userID: selfUserID, userName: selfUserName, avatarUrl: avatarUrl) { error in
-            if error.code != .success {
+            if error.code != .ZIMErrorCodeSuccess {
                 return
             }
             self.showConversationList()
@@ -95,7 +95,7 @@ extension ViewController {
     
     func createGroup(_ groupName: String, _ groupID: String, _ userIDs: [String]) {
         ZIMKit.createGroup(with: groupName, groupID: groupID, inviteUserIDs: userIDs) { groupInfo, inviteUserErrors, error in
-            if error.code == .success {
+            if error.code == .ZIMErrorCodeSuccess {
                 self.startChat(groupInfo.id, .group)
             }
         }
@@ -103,7 +103,7 @@ extension ViewController {
     
     func joinGroup(_ groupID: String) {
         ZIMKit.joinGroup(by: groupID) { groupInfo, error in
-            if error.code == .success || error.code == .groupModuleMemberIsAlreadyInTheGroup {
+            if error.code == .ZIMErrorCodeSuccess || error.code == .ZIMErrorCodeGroupModuleMemberIsAlreadyInTheGroup {
                 self.startChat(groupID, .group)
             }
         }

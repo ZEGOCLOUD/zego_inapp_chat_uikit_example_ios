@@ -10,10 +10,11 @@ import ZIMKit
 import ZIM
 import ZegoUIKitPrebuiltCall
 import ZegoUIKit
+import ZegoPluginAdapter
 
 let appID: UInt32 = YOUR_APPID
 let appSign: String = YOUR_APP_SIGN
-
+let resourceID: String = YOUR_RESOURCEID
 class ViewController: UIViewController {
     
     @IBOutlet weak var userIDTextField: UITextField!
@@ -28,7 +29,16 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         // zimkit init and login.
-        ZIMKit.initWith(appID: appID, appSign: appSign)
+      let config = ZIMKitConfig()
+      let call:ZegoUIKitPrebuiltCallInvitationConfig = ZegoUIKitPrebuiltCallInvitationConfig(notifyWhenAppRunningInBackgroundOrQuit: true, isSandboxEnvironment: true, certificateIndex: .firstCertificate)
+      let callConfig: ZegoCallPluginConfig = ZegoCallPluginConfig(invitationConfig: call, resourceID: resourceID)
+
+      config.callPluginConfig = callConfig
+      config.bottomConfig.smallButtons = [.audio, .emoji, .picture, .expand,.voiceCall]
+      config.bottomConfig.expandButtons.insert(.voiceCall, at: config.bottomConfig.expandButtons.count - 1)
+      config.bottomConfig.expandButtons.insert(.videoCall, at: config.bottomConfig.expandButtons.count - 1)
+      
+      ZIMKit.initWith(appID: appID, appSign: appSign, config: config)
         
         userIDTextField.text = selfUserID
         userNameTextField.text = selfUserName
@@ -62,15 +72,10 @@ class ViewController: UIViewController {
             }
             self.showConversationList()
         }
-        
-        // Call init
-        let config = ZegoUIKitPrebuiltCallInvitationConfig(notifyWhenAppRunningInBackgroundOrQuit: false, isSandboxEnvironment: true)
-        ZegoUIKitPrebuiltCallInvitationService.shared.initWithAppID(appID, appSign: appSign, userID: self.selfUserID, userName: self.selfUserName, config: config)
     }
     
     func showConversationList() {
         let vc = ZIMKitConversationListVC()
-        vc.messageDelegate = self
         vc.delegate = self
         
         navigationController?.pushViewController(vc, animated: true)
@@ -87,9 +92,7 @@ class ViewController: UIViewController {
 // MARK: - Start a chat
 extension ViewController {
     func startChat(_ conversationID: String, _ type: ZIMConversationType) {
-        let inputConfig = InputConfig(showVoiceButton: true, showEmojiButton: true, showAddButton: true);
-        let vc = ZIMKitMessagesListVC(conversationID: conversationID, type: type, inputConfig: inputConfig)
-        vc.delegate = self
+        let vc = ZIMKitMessagesListVC(conversationID: conversationID, type: type)
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -200,40 +203,12 @@ extension ViewController {
 // MARK: - Call
 extension ViewController: ZIMKitMessagesListVCDelegate, ZIMKitConversationListVCDelegate {
     func conversationList(_ conversationListVC: ZIMKitConversationListVC, didSelectWith conversation: ZIMKitConversation, defaultAction: () -> ()) {
-        
-        let inputConfig = InputConfig(showVoiceButton: true,
-                                      showEmojiButton: true,
-                                      showAddButton: true)
-        
+      
         let messageListVC = ZIMKitMessagesListVC(conversationID: conversation.id,
                                                  type: conversation.type,
-                                                 conversationName: conversation.name,
-                                                 inputConfig: inputConfig)
-        messageListVC.delegate = self
+                                                 conversationName: conversation.name)
+        
         self.navigationController?.pushViewController(messageListVC, animated: true)
-    }
-    
-    func getMessageListHeaderBar(_ messageListVC: ZIMKitMessagesListVC) -> ZIMKitHeaderBar? {
-        
-        if messageListVC.conversationType != .peer { return nil }
-        
-        let header = ZIMKitHeaderBar()
-        
-        let conversationID = messageListVC.conversationID
-        let conversationName = messageListVC.conversationName
-        
-        let voiceCallButton: ZegoSendCallInvitationButton = ZegoSendCallInvitationButton(ZegoInvitationType.voiceCall.rawValue)
-        voiceCallButton.inviteeList = [ZegoUIKitUser(conversationID, conversationName)]
-        
-        let videoCallButton: ZegoSendCallInvitationButton = ZegoSendCallInvitationButton(ZegoInvitationType.videoCall.rawValue)
-        videoCallButton.inviteeList = [ZegoUIKitUser(conversationID, conversationName)]
-        
-        let voiceItem = UIBarButtonItem(customView: voiceCallButton)
-        let videoItem = UIBarButtonItem(customView: videoCallButton)
-        
-        header.rightItems = [videoItem, voiceItem]
-        
-        return header
     }
 }
 

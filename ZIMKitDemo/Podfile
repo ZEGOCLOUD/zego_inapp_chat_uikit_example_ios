@@ -6,9 +6,8 @@ target 'ZIMKitDemo' do
   use_frameworks!
 
   # Pods for ZIMKitDemo
-  pod 'ZIMKit'
-  pod 'ZegoUIKitPrebuiltCall'
-  
+  pod 'ZIMKit','>= 2.5.1'
+  pod 'ZegoUIKitPrebuiltCall','>= 2.12.1'
   post_install do |installer|
     installer.generated_projects.each do |project|
       project.targets.each do |target|

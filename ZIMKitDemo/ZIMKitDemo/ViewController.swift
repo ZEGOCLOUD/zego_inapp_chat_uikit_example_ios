@@ -12,9 +12,6 @@ import ZegoUIKitPrebuiltCall
 import ZegoUIKit
 import ZegoPluginAdapter
 
-let appID: UInt32 = YOUR_APPID
-let appSign: String = YOUR_APP_SIGN
-let resourceID: String = YOUR_RESOURCEID
 class ViewController: UIViewController {
     
     @IBOutlet weak var userIDTextField: UITextField!
@@ -31,14 +28,14 @@ class ViewController: UIViewController {
         // zimkit init and login.
       let config = ZIMKitConfig()
       let call:ZegoUIKitPrebuiltCallInvitationConfig = ZegoUIKitPrebuiltCallInvitationConfig(notifyWhenAppRunningInBackgroundOrQuit: true, isSandboxEnvironment: true, certificateIndex: .firstCertificate)
-      let callConfig: ZegoCallPluginConfig = ZegoCallPluginConfig(invitationConfig: call, resourceID: resourceID)
+        let callConfig: ZegoCallPluginConfig = ZegoCallPluginConfig(invitationConfig: call, resourceID: KeyCenter.resourceID)
 
       config.callPluginConfig = callConfig
       config.bottomConfig.smallButtons = [.audio, .emoji, .picture, .expand,.voiceCall]
       config.bottomConfig.expandButtons.insert(.voiceCall, at: config.bottomConfig.expandButtons.count - 1)
       config.bottomConfig.expandButtons.insert(.videoCall, at: config.bottomConfig.expandButtons.count - 1)
       
-      ZIMKit.initWith(appID: appID, appSign: appSign, config: config)
+        ZIMKit.initWith(appID: KeyCenter.appID, appSign: KeyCenter.appSign, config: config)
         
         userIDTextField.text = selfUserID
         userNameTextField.text = selfUserName
